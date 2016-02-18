@@ -10,9 +10,8 @@ $ pip install cr
 ## Usage
 
 ```
-$ cr --help
-$ cr dump-pad ./path/to/pad.gz
-$ cr dump-game ./path/to/game.gz
+$ cr dump 'pad-test' ./path/to/pad.gz
+$ cr dump 'game-test' ./path/to/game.gz
 ```
 
 ## Development
