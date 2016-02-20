@@ -81,6 +81,7 @@ setup(
     install_requires=[
         'boto3',
         'click',
+        'xmltodict',
         'click-plugins'
     ],
 

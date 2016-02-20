@@ -2,23 +2,28 @@ import click
 import json
 import boto3
 import gzip
+import xmltodict
 
 client = boto3.client('dynamodb')
 
 @click.command(short_help="Download a database into a gzipped file")
 @click.argument('table', default='-', required=True)
 @click.argument('filepath', default='dump.gz', required=False)
+@click.option(
+    '--xml/--json',
+    default=False,
+    help="download as xml")
 @click.pass_context
-def dump(ctx, table, filepath):
+def dump(ctx, table, filepath, xml):
     """This command dumps the contents of a dynamodb table into a gzipped file.
 
     To get the dump of the game-test table, do:
 
         $ cr dump 'game-test' ./path/to/dump.gz
 
-    To get the dump of the pad-test table, do:
+    To get the dump of the pad-test table in xml, do:
 
-        $ cr dump 'pad-test' ./path/to/dump.gz
+        $ cr dump 'pad-test' ./path/to/dump.gz --xml
     """
 
     items = []
@@ -30,7 +35,8 @@ def dump(ctx, table, filepath):
         response = client.scan(TableName=table, ExclusiveStartKey=response.get('LastEvaluatedKey'))
         items += response.get('Items')
 
-    itemstring = json.dumps(items)
+    items = {'Items':{'item':items}}
+    itemstring = xmltodict.unparse((items))
     
     with gzip.open(filepath, 'wb') as f_out:
         f_out.write(itemstring)
