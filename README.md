@@ -4,7 +4,7 @@
 ## Installation
 
 ```
-$ pip install cr
+$ pip install crcli
 ```
 
 ## Usage
