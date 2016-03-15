@@ -1,0 +1,6 @@
+click>=6.2
+xmltodict>=0.9.2
+click-plugins>=1.0.3
+-e git://github.com/boto/botocore.git@develop#egg=botocore
+-e git://github.com/boto/s3transfer.git@develop#egg=s3transfer
+-e git://github.com/boto/jmespath.git@develop#egg=jmespath
