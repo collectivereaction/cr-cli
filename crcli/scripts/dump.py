@@ -10,20 +10,20 @@ client = boto3.client('dynamodb')
 @click.argument('table', default='-', required=True)
 @click.argument('filepath', default='dump.gz', required=False)
 @click.option(
-    '--xml/--json',
+    '--csv/--no-csv',
     default=False,
-    help="download as xml")
+    help="download as csv")
 @click.pass_context
-def dump(ctx, table, filepath, xml):
+def dump(ctx, table, filepath, csv):
     """This command dumps the contents of a dynamodb table into a gzipped file.
 
-    To get the dump of the game-test table, do:
+    To get the dump of the game-test table in xml, do:
 
         $ cr dump 'game-test' ./path/to/dump.gz
 
-    To get the dump of the pad-test table in xml, do:
+    To get the dump of the pad-test table in csv, do:
 
-        $ cr dump 'pad-test' ./path/to/dump.gz --xml
+        $ cr dump 'pad-test' ./path/to/dump.csv --csv
     """
 
     items = []
@@ -35,8 +35,13 @@ def dump(ctx, table, filepath, xml):
         response = client.scan(TableName=table, ExclusiveStartKey=response.get('LastEvaluatedKey'))
         items += response.get('Items')
 
-    items = {'Items':{'item':items}}
-    itemstring = xmltodict.unparse((items))
+    if csv == True:
+        itemstring = 'session,timestamp,P,A'
+        for item in items:
+            itemstring += item['session']['S'] + ',' + item['timestamp']['N'] + ',' + item['P']['S'] + ',' + item['A']['S'] + '\n'
+    else:
+        items = {'Items':{'item':items}}
+        itemstring = xmltodict.unparse((items))
     
     with gzip.open(filepath, 'wb') as f_out:
         f_out.write(itemstring)
